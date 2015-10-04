@@ -88,6 +88,7 @@ func newTestSystem(t *testing.T, numClients int, params *Params) *testSystem {
 		}
 	}
 	t.Logf("Started %d clients.", numClients)
+
 	return ts
 }
 
