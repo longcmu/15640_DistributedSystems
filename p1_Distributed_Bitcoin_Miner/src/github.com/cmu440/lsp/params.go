@@ -6,8 +6,8 @@ import "fmt"
 
 // Default values for LSP parameters.
 const (
-	DefaultEpochLimit  = 5
-	DefaultEpochMillis = 2000
+	DefaultEpochLimit  = 50
+	DefaultEpochMillis = 20000
 	DefaultWindowSize  = 1
 )
 
