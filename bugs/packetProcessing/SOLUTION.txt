@@ -1,0 +1,7 @@
+1: This has a race condition as slices are really references to some underlying array of data. In ReadHandler, you only create one of these arrays so every time you call ReadFromUDP with bytes, you're actually just reusing the same slice. Therefore, when reading new data, you may be corrupting the previous data that is being processed.
+2: This solves the problem in 1 by creating a new slice for every UDP message.
+3: This is technically ok, but there is a subtle problem in that you essentially have a memory leak. Since every message is linked, go cannot garbage collect.
+4: This solves the memory leak in 3, but introduces a race condition when modifying and checking the shared state packet.processCount and packet.prev. While missing some updates to packet.processCount is not fatal, you may run into nil dereference errors if a thread executes packet.prev = nil between the time these two lines execute in another thread:
+if packet.prev != nil {
+	packet = packet.prev
+5: This solves the race condition in 4 by moving the cleanup work to a single thread that is inherently synchronized.

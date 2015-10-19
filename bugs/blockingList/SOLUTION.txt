@@ -1,0 +1,4 @@
+1: This has a spin loop which is almost never what you want and can cause hangs in Go.
+2: This has a more subtle spin loop since it just goes to the default case without blocking.
+3: This has an even more subtle spin loop as it simply keeps removing and inserting a token into the removeRequestCh when the list is empty.
+4: This is one common way of fixing the spin loop and the code here should be valid.
