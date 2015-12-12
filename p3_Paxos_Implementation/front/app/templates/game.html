@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <title>Who get 30? (Gameroom {{ room }})</title>
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            var socket;
+            $(document).ready(function(){
+                socket = io.connect('http://' + document.domain + ':' + location.port + '/game');
+                socket.on('connect', function() {
+                    socket.emit('joined', {});
+                });
+                socket.on('status', function(data) {
+                    $('#game').val($('#game').val() + '<' + data.msg + '>\n');
+                    $('#game').scrollTop($('#game')[0].scrollHeight);
+                });
+                socket.on('message', function(data) {
+                    $('#game').val($('#game').val() + data.msg + '\n');
+                    $('#game').scrollTop($('#game')[0].scrollHeight);
+                });
+                $('#text').keypress(function(e) {
+                    var code = e.keyCode || e.which;
+                    if (code == 13) {
+                        text = $('#text').val();
+                        $('#text').val('');
+                        socket.emit('text', {msg: text});
+                    }
+                });
+            });
+            function leave_room() {
+                socket.emit('left', {}, function() {
+                    socket.disconnect();
+
+                    // go back to the login page
+                    window.location.href = "{{ url_for('main.index') }}";
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Who get 30? (Gameroom {{ room }})</h1>
+        <textarea id="game" cols="80" rows="20"></textarea><br><br>
+        <input id="text" size="80" placeholder="Enter your choice here (current value add 1 or 2)"><br><br>
+        <a href="#" onclick="leave_room();">Leave game</a>
+    </body>
+</html>
